@@ -1,18 +1,18 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var src = path.join(__dirname, 'src');
+
 module.exports = {
     entry: {
-        //styles: path.join(src, 'styles.js'),
-        index: path.join(src, 'index.pug'),
         bundle: path.join(src, 'index.js'),
     },
     output: {
         path: path.join(__dirname, 'dist'),
         publicPath: '',
-        filename: '[name].js'
+        filename: 'bundle.js'
     },
     module: {
         rules: [
@@ -23,26 +23,18 @@ module.exports = {
             },*/
             {
                 test: /\.scss$/,
-                use: [{
-                    loader: "style-loader" // creates style nodes from JS strings
-                }, {
-                    loader: "css-loader" // translates CSS into CommonJS
-                }, {
-                    loader: "sass-loader" // compiles Sass to CSS
-                }]
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader', 'sass-loader']
+                })
             },
             {
                 test: /\.pug$/,
-                //use:  ['pug-loader'],
                 use: {
                     loader: 'pug-loader',
                     query: {}
                 }
             },
-            /*{
-                test: /\.pug$/,
-                use:  ['html-loader', 'pug-html-loader?pretty&exports=false']
-            },*/
             /*{
                 test: /\.(eot|png|ttf|svg|woff|woff2)$/,
                 loader: 'url-loader'
@@ -56,5 +48,6 @@ module.exports = {
             title: 'index.html',
             template: path.join(src, 'index.pug'),
         }),
+        new ExtractTextPlugin('styles.css')
     ]
 };
